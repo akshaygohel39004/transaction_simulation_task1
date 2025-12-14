@@ -36,7 +36,7 @@ public class User {
 
     public void addAccount(Account account) {
         if (account == null) return;
-        if (!accounts.contains(account)) accounts.add(account);
+        accounts.add(account);
     }
 
     public void removeAccount(Account account) {

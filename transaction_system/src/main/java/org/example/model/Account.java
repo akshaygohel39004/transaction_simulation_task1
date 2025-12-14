@@ -4,18 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Account {
+public class Account implements Comparable<Account>{
+
     private Long accountId;
     private String accountNumber; // 10 digit
     private AccountType accountType;
+    private Double accountBalance;
     private final List<Transaction> transactions = new ArrayList<>();
+
+
 
     public Account() {}
 
-    public Account(Long accountId, String accountNumber, AccountType accountType) {
+    public Account(Long accountId, String accountNumber,Double accountBalance, AccountType accountType) {
+
         this.accountId = accountId;
         this.accountNumber = accountNumber;
         this.accountType = accountType;
+        this.accountBalance = accountBalance;
+    }
+
+    public void setAccountBalance(Double accountBalance) {
+        this.accountBalance = accountBalance;
+    }
+
+    public Double getAccountBalance() {
+        return accountBalance;
     }
 
     public Long getAccountId() { return accountId; }
@@ -57,8 +71,14 @@ public class Account {
         return "Account{" +
                 "accountId=" + accountId +
                 ", accountNumber='" + accountNumber + '\'' +
+                ", accountBalance='" + accountBalance + '\'' +
                 ", accountType=" + accountType +
                 ", transactionsCount=" + transactions.size() +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Account o) {
+        return o.getAccountId().compareTo(this.getAccountId());
     }
 }
