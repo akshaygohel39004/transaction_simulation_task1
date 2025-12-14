@@ -8,7 +8,7 @@ import org.example.business.*;
 import org.example.exceptions.ThrowExcpetions;
 import org.example.model.*;
 import org.example.service.*;
-
+import org.example.stats.PaymentStatsRouter;
 
 import java.util.*;
 
@@ -20,6 +20,8 @@ public class Client {
     //stores requestTransaction based on receiver indexing
     private final Map<Account, List<RequestTransaction>> requestTransactionsReceiver =new TreeMap<>();
 
+    private final PaymentStatsRouter statsRouter;
+
 
     //this all are services
     private final UserService userService = new InMemoryUserService();
@@ -30,8 +32,8 @@ public class Client {
     //tracking of authentication
     private User logedinUser;
 
-    public Client(){
-
+    public Client(PaymentStatsRouter statsRouter){
+        this.statsRouter = statsRouter;
         seedSampleData();
     }
     private void seedSampleData() {
@@ -57,9 +59,9 @@ public class Client {
         int choice=sc.nextInt();
 
         return switch (choice) {
-            case 1 -> TransactionFactory.getTransactionPaymentService(PaymentService.CardProcessor);
-            case 2 -> TransactionFactory.getTransactionPaymentService(PaymentService.UPI);
-            default -> TransactionFactory.getTransactionPaymentService(PaymentService.MobileGateway);
+            case 1 -> TransactionFactory.getTransactionPaymentService(PaymentService.CardProcessor,statsRouter);
+            case 2 -> TransactionFactory.getTransactionPaymentService(PaymentService.UPI,statsRouter);
+            default -> TransactionFactory.getTransactionPaymentService(PaymentService.MobileGateway,statsRouter);
         };
     }
 
@@ -120,6 +122,7 @@ public class Client {
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
+
                     System.out.println("All transactions");
                     break;
                 case 7:
@@ -395,13 +398,12 @@ public class Client {
         RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO();
         requestTransactionDTO.setRequestTransactionsReceiver(requestTransactionsReceiver);
         requestTransactionDTO.setRequestTransactionsSender(requestTransactionsSender);
-
-
         requestTransactionService.UpdateRequestTransaction(requestTransactionDTO,requestTransaction);
         Transaction transaction=requestTransaction.getTransaction();
         Account receiver=transaction.getSender(); //here transaction.getSender is request sender so in real transaction it will become receiver of money
         Account sender=transaction.getReceiver(); //here transaction.getReceiver is request receiver so in real transaction he/she will become sender of money
-        Double amount=transaction.getAmount();IMakeTransactions makeTransactions=paymentServiceType();
+        Double amount=transaction.getAmount();
+        IMakeTransactions makeTransactions=paymentServiceType();
 
         makeTransactions.transferTransaction(sender,receiver,amount, choice != 1);
 

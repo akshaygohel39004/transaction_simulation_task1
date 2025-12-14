@@ -1,17 +1,16 @@
 package org.example;
-
 import org.example.client.Client;
+import org.example.stats.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(){
-        Client client = new Client();
+
+    public static void main(String[] args) {
+
+        StatsStartUp statsStartUp = new StatsStartUp();
+        PaymentStatsRouter paymentStatsRouter=statsStartUp.start();
+        Client client = new Client(paymentStatsRouter);
         client.start();
+        statsStartUp.shutDown();
+
     }
 }
