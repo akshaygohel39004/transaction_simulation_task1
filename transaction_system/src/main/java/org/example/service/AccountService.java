@@ -1,24 +1,15 @@
 package org.example.service;
 
+import org.example.DTO.AccountViewDTO;
 import org.example.model.Account;
+import org.example.model.User;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+
 
 public interface AccountService {
 
-    /**
-     * Return all accounts.
-     */
-    List<Account> readAllAccounts();
-
-    /**
-     * Return account details by id.
-     */
-    Optional<Account> readAccountById(Long accountId);
-
-    /**
-     * Return all accounts belonging to a user.
-     */
-    List<Account> getAccountsByUserId(Long userId);
+    List<AccountViewDTO> readAllAccounts(Map<Long, User> users);
+    Account readAccountByAccountNumber(Map<Long, User> users, String accountNumber);
 }

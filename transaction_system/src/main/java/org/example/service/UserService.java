@@ -3,17 +3,11 @@ package org.example.service;
 import org.example.model.User;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+
 
 public interface UserService {
 
-    /**
-     * Return all users.
-     */
-    List<User> readAllUsers();
+    List<User> readAllUsers(Map<Long,User> users);
 
-    /**
-     * Return user details by id.
-     */
-    Optional<User> readUserById(Long userId);
 }
