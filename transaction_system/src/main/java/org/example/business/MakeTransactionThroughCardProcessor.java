@@ -2,15 +2,15 @@ package org.example.business;
 
 import org.example.exceptions.ThrowExcpetions;
 import org.example.model.*;
-
+import org.example.stats.PaymentStatsRouter;
 
 import java.time.LocalDateTime;
 
 public class MakeTransactionThroughCardProcessor implements IMakeTransactions {
+    private final PaymentStatsRouter statsRouter;
 
-
-    public MakeTransactionThroughCardProcessor() {
-
+    public MakeTransactionThroughCardProcessor(PaymentStatsRouter statsRouter) {
+        this.statsRouter = statsRouter;
     }
 
     //for deposit/withdraw into account
@@ -55,14 +55,14 @@ public class MakeTransactionThroughCardProcessor implements IMakeTransactions {
                 System.out.println(e.getMessage());
                 account.addTransaction(transaction);
                 transaction.setStatus(TransactionStatus.FAILED);
-
+                statsRouter.submit(transaction);
                 return;
             }
         }
         account.setAccountBalance(updatedAccountBalance);
         account.addTransaction(transaction);
         transaction.setStatus(TransactionStatus.COMPLETED);
-
+        statsRouter.submit(transaction);
     }
 
     @Override
@@ -96,14 +96,14 @@ public class MakeTransactionThroughCardProcessor implements IMakeTransactions {
             sender.addTransaction(transaction);
             receiver.addTransaction(transaction);
             transaction.setStatus(TransactionStatus.FAILED);
-
+            statsRouter.submit(transaction);
             return;
         }
         //critical section ends here
         sender.addTransaction(transaction);
         receiver.addTransaction(transaction);
         transaction.setStatus(TransactionStatus.COMPLETED);
-
+        statsRouter.submit(transaction);
     }
 
     @Override

@@ -2,14 +2,15 @@ package org.example.business;
 
 import org.example.exceptions.ThrowExcpetions;
 import org.example.model.*;
-
+import org.example.stats.PaymentStatsRouter;
 
 import java.time.LocalDateTime;
 
 public class MakeTransactionThroughMobileGateWay implements IMakeTransactions {
+    private final PaymentStatsRouter statsRouter;
 
-    public MakeTransactionThroughMobileGateWay() {
-
+    public MakeTransactionThroughMobileGateWay(PaymentStatsRouter statsRouter) {
+        this.statsRouter = statsRouter;
     }
 
     //for deposit/withdraw into account
@@ -29,39 +30,39 @@ public class MakeTransactionThroughMobileGateWay implements IMakeTransactions {
 
     @Override
     public void SelfTransaction(Account account, Double Amount, boolean isDeposit) {
-       Double updatedAccountBalance,currentAccountBalance;
-       currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
-       Transaction transaction =getTransaction(account,account,Amount);
-       if(isDeposit){
-           transaction.setTransactionType(TransactionType.CREDIT);
-           updatedAccountBalance=currentAccountBalance+Amount;
-           System.out.println("Current Account Balance is "+currentAccountBalance);
-           System.out.println("Updated Account Balance is "+updatedAccountBalance);
-       }
-       else{
-           transaction.setTransactionType(TransactionType.WITHDRAW);
-           try{
-               if(currentAccountBalance<Amount){
+        Double updatedAccountBalance,currentAccountBalance;
+        currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
+        Transaction transaction =getTransaction(account,account,Amount);
+        if(isDeposit){
+            transaction.setTransactionType(TransactionType.CREDIT);
+            updatedAccountBalance=currentAccountBalance+Amount;
+            System.out.println("Current Account Balance is "+currentAccountBalance);
+            System.out.println("Updated Account Balance is "+updatedAccountBalance);
+        }
+        else{
+            transaction.setTransactionType(TransactionType.WITHDRAW);
+            try{
+                if(currentAccountBalance<Amount){
 
-                   throw new Exception("Insufficient Balance");
-               }
-               else{
-                   updatedAccountBalance=currentAccountBalance-Amount;
+                    throw new Exception("Insufficient Balance");
+                }
+                else{
+                    updatedAccountBalance=currentAccountBalance-Amount;
 
-               }
-           }
-           catch (Exception e){
-               System.out.println(e.getMessage());
-               account.addTransaction(transaction);
-               transaction.setStatus(TransactionStatus.FAILED);
-
-               return;
-           }
-       }
-       account.setAccountBalance(updatedAccountBalance);
-       account.addTransaction(transaction);
-       transaction.setStatus(TransactionStatus.COMPLETED);
-
+                }
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+                account.addTransaction(transaction);
+                transaction.setStatus(TransactionStatus.FAILED);
+                statsRouter.submit(transaction);
+                return;
+            }
+        }
+        account.setAccountBalance(updatedAccountBalance);
+        account.addTransaction(transaction);
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        statsRouter.submit(transaction);
     }
 
     @Override
@@ -95,14 +96,14 @@ public class MakeTransactionThroughMobileGateWay implements IMakeTransactions {
             sender.addTransaction(transaction);
             receiver.addTransaction(transaction);
             transaction.setStatus(TransactionStatus.FAILED);
-
+            statsRouter.submit(transaction);
             return;
         }
         //critical section ends here
         sender.addTransaction(transaction);
         receiver.addTransaction(transaction);
         transaction.setStatus(TransactionStatus.COMPLETED);
-
+        statsRouter.submit(transaction);
     }
 
     @Override
