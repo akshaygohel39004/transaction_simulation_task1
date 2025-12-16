@@ -1,10 +1,6 @@
 package org.example.client;
 
 import org.example.DTO.AccountViewDTO;
-import org.example.DTO.RequestTransactionDTO;
-import org.example.DTO.TransactionViewDTO;
-import org.example.business.IMakeTransactions;
-import org.example.business.*;
 import org.example.exceptions.ExceptionsCenter;
 import org.example.model.*;
 import org.example.service.*;
@@ -71,7 +67,7 @@ public class Client {
                     }
                     break;
                 case 2:
-                    listAllAccount();
+                    listAllUserAccounts();
                     break;
                 case 3:
                     try {
@@ -101,7 +97,7 @@ public class Client {
     private void login() throws Exception {
         Scanner scanner=new Scanner(System.in);
         System.out.println("Enter Username");
-        String username = scanner.next();
+        String username = scanner.nextLine();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
             ExceptionsCenter.throwNotFound("User");
@@ -109,11 +105,11 @@ public class Client {
         System.out.println("Your login done");
     }
 
-    private boolean authenticate(){
+    private boolean isAuthenticate(){
         return logedinUser == null;
     }
 
-    private void listAllAccount(){
+    private void listAllUserAccounts(){
         List<AccountViewDTO> accountViewDTOList=accountService.readAllAccounts(users);
         for(AccountViewDTO accountViewDTO : accountViewDTOList){
             System.out.println(accountViewDTO);
@@ -121,7 +117,7 @@ public class Client {
     }
 
     private void printMyAccountDetails() throws Exception {
-        if(authenticate()){
+        if(isAuthenticate()){
             ExceptionsCenter.throwUnAuthorized();
         }
         List<Account> AccountList=logedinUser.getAccounts();
