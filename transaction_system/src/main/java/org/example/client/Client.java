@@ -10,7 +10,7 @@ import java.util.*;
 public class Client {
     //stores user indexing on id
     private static final Map<Long,User> users = new HashMap<>();
-
+    static Scanner  scanner=new Scanner(System.in);
 
 
     //this all are services
@@ -41,7 +41,7 @@ public class Client {
 
     public void start() {
         while(true){
-            Scanner sc = new Scanner(System.in);
+
             System.out.println("Choose what you want to be do");
             System.out.println("1.Login");
             System.out.println("2.Account List");
@@ -57,7 +57,7 @@ public class Client {
 
             int Choose;
 
-            Choose=sc.nextInt();
+            Choose=scanner.nextInt();
             switch (Choose){
                 case 1:
                     try {
@@ -78,6 +78,7 @@ public class Client {
                     break;
                 case 10:
                     logout();
+                    break;
                 case 11:
                     return;
 
@@ -94,9 +95,11 @@ public class Client {
         }
         users.put(user.getUserId(), user);
     }
+
     private void login() throws Exception {
-        Scanner scanner=new Scanner(System.in);
+
         System.out.println("Enter Username");
+        scanner.nextLine();
         String username = scanner.nextLine();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
