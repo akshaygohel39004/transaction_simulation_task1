@@ -2,6 +2,7 @@ package org.example.client;
 
 import org.example.DTO.AccountViewDTO;
 import org.example.exceptions.ExceptionsCenter;
+import org.example.exceptions.GeneralException;
 import org.example.model.*;
 import org.example.service.*;
 
@@ -10,6 +11,8 @@ import java.util.*;
 public class Client {
     //stores user indexing on id
     private static final Map<Long,User> users = new HashMap<>();
+    //store  accountNumber as index
+    private static final Map<String,Account> accounts = new HashMap<>();
     static Scanner  scanner=new Scanner(System.in);
 
 
@@ -32,10 +35,13 @@ public class Client {
 
         u1.addAccount(new Account(100L, "1",5000D, AccountType.SAVING));
         u1.addAccount(new Account(101L, "2", 20000D,AccountType.CHECKING));
+        accounts.put(u1.getAccounts().get(0).getAccountNumber(),u1.getAccounts().get(0));
+        accounts.put(u1.getAccounts().get(1).getAccountNumber(),u1.getAccounts().get(1));
         addUser(u1);
 
         u2.addAccount(new Account(102L, "3", 40005D,AccountType.SAVING));
         addUser(u2);
+        accounts.put(u2.getAccounts().get(0).getAccountNumber(),u2.getAccounts().get(0));
 
     }
 
@@ -67,7 +73,11 @@ public class Client {
                     }
                     break;
                 case 2:
-                    listAllUserAccounts();
+                    try {
+                        listAllUserAccounts();
+                    } catch (GeneralException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 3:
                     try {
@@ -112,7 +122,7 @@ public class Client {
         return logedinUser == null;
     }
 
-    private void listAllUserAccounts(){
+    private void listAllUserAccounts() throws GeneralException {
         List<AccountViewDTO> accountViewDTOList=accountService.readAllAccounts(users);
         for(AccountViewDTO accountViewDTO : accountViewDTOList){
             System.out.println(accountViewDTO);
