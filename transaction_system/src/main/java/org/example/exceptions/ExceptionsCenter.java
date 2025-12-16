@@ -1,15 +1,15 @@
 package org.example.exceptions;
 
-public class ThrowExcpetions {
+public class ExceptionsCenter {
     public static void throwUnAuthorized() throws Exception {
-        throw new Exception("401:Unauthorized , Kindly do login first");
+        throw new UnauthorizedException();
     }
 
     public static  void throwNotFound(String subject) throws Exception {
-        throw new Exception("404:"+subject+"Not Found");
+        throw new NotFoundException(subject);
     }
 
     public static void general(String message) throws Exception {
-        throw new Exception(message);
+        throw new GeneralException(message);
     }
 }

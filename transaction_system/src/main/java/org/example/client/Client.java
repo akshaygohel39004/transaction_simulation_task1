@@ -5,10 +5,9 @@ import org.example.DTO.RequestTransactionDTO;
 import org.example.DTO.TransactionViewDTO;
 import org.example.business.IMakeTransactions;
 import org.example.business.*;
-import org.example.exceptions.ThrowExcpetions;
+import org.example.exceptions.ExceptionsCenter;
 import org.example.model.*;
 import org.example.service.*;
-import org.example.stats.PaymentStatsRouter;
 
 import java.util.*;
 
@@ -20,7 +19,7 @@ public class Client {
 
     //this all are services
     private final UserService userService = new InMemoryUserService();
-   private final AccountService accountService=new InMemoryAccountService(userService);
+    private final AccountService accountService=new InMemoryAccountService(userService);
 
     //tracking of authentication
     private User logedinUser;
@@ -105,7 +104,7 @@ public class Client {
         String username = scanner.next();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
-            ThrowExcpetions.throwNotFound("User");
+            ExceptionsCenter.throwNotFound("User");
         }
         System.out.println("Your login done");
     }
@@ -123,7 +122,7 @@ public class Client {
 
     private void printMyAccountDetails() throws Exception {
         if(authenticate()){
-            ThrowExcpetions.throwUnAuthorized();
+            ExceptionsCenter.throwUnAuthorized();
         }
         List<Account> AccountList=logedinUser.getAccounts();
         for(Account account:AccountList){
