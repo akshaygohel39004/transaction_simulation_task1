@@ -16,19 +16,16 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
     }
 
     //for deposit/withdraw into account
-    private Transaction getTransaction(Account sender,Account receiver,Double Amount){
-        Transaction transaction = new Transaction();
-        transaction.setTransactionInitiationTime(LocalDateTime.now());
-        transaction.setPaymentService(PaymentService.UPI);
-        transaction.setTransactionId(Utility.generateUniqueLongId());
+    private Transaction getTransaction(Account sender,Account receiver,Double amount){
+        Transaction transaction = (new Transaction.Builder())
+                .setTransactionId(Utility.generateUniqueLongId())
+                .setPaymentService(PaymentService.UPI)
+                .setStatus(TransactionStatus.PENDING)
+                .setTransactionType(TransactionType.TRANSFER)
+                .setSender(sender)
+                .setReceiver(receiver)
+                .setAmount(amount).Build();
 
-
-
-        transaction.setTransactionType(TransactionType.TRANSFER);
-        transaction.setStatus(TransactionStatus.PENDING);
-        transaction.setSender(sender);
-        transaction.setReceiver(receiver);
-        transaction.setAmount(Amount);
         return transaction;
     }
 

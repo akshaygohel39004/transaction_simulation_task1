@@ -103,6 +103,7 @@ public class TransactionViewDTO {
                 ", transactionInitiationTime=" + transactionInitiationTime +
                 ", status=" + status +
                 ", paymentService=" + paymentService +
+                ", amount=" + amount +
                 '}';
     }
 }
