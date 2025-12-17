@@ -170,6 +170,16 @@ public class Client {
             }
 
         }}
+    private Account getMyAccount() throws Exception {
+        //ask about which account you want to use
+
+        printMyAccountDetails();
+        //basic details input request sender account number , request receiver account number,amount
+        System.out.println("Enter your Account Number");
+        String myAccountNumber=scanner.next();
+
+        return accountService.readAccountByAccountNumber(accounts,myAccountNumber);
+    }
 
     private void addUser(User user) {
         if (user == null || user.getUserId() == null) {
@@ -318,9 +328,7 @@ public class Client {
         RequestTransaction requestTransaction=makeTransactions.RequestTransaction(myAccount,receiverAccount,amount);
 
         //creating request transaction DTO
-        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO();
-        requestTransactionDTO.setRequestTransactionsReceiver(requestTransactionsReceiver);
-        requestTransactionDTO.setRequestTransactionsSender(requestTransactionsSender);
+        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO(requestTransactionsSender,requestTransactionsReceiver);
 
         //added requestTransaction into list maintaining inside client itself
         requestTransactionService.CreateRequestTransaction(requestTransactionDTO,requestTransaction);
@@ -333,14 +341,8 @@ public class Client {
         if(isAuthenticat()){
             ExceptionsCenter.throwUnAuthorized();
         }
-        //ask about which account you want to use
-        Scanner scanner=new Scanner(System.in);
-        printMyAccountDetails();
-        //basic details input request sender account number , request receiver account number,amount
-        System.out.println("Enter your Account Number");
-        String myAccountNumber=scanner.next();
 
-        Account myAccount= accountService.readAccountByAccountNumber(accounts,myAccountNumber);
+        Account myAccount=getMyAccount();
         if(myAccount==null){
             ExceptionsCenter.throwNotFound("sender's account");
         }
@@ -363,12 +365,13 @@ public class Client {
             return null;
         }
 
-        for(RequestTransaction requestTransaction:requestTransaction1){
+        requestTransaction1.stream().forEach((requestTransaction) -> {
             System.out.println(requestTransaction.getRequestTransactionId()+"           "
                     +requestTransaction.getTransaction().getSender().getAccountNumber()+"            "
                     +requestTransaction.getTransaction().getAmount()
             );
-        }
+        });
+
         return myAccount;
     }
 
@@ -404,10 +407,7 @@ public class Client {
         System.out.println("Enter 1 to Accpet.\nEnter else to Reject");
         choice=sc.nextInt();
         //creating request transaction DTO
-        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO();
-        requestTransactionDTO.setRequestTransactionsReceiver(requestTransactionsReceiver);
-        requestTransactionDTO.setRequestTransactionsSender(requestTransactionsSender);
-
+        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO(requestTransactionsSender,requestTransactionsReceiver);
 
         requestTransactionService.UpdateRequestTransaction(requestTransactionDTO,requestTransaction);
         Transaction transaction=requestTransaction.getTransaction();

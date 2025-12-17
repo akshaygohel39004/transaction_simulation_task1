@@ -8,22 +8,21 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestTransactionDTO {
-    private Map<Account, List<RequestTransaction>> requestTransactionsSender;
-    private Map<Account, List<RequestTransaction>> requestTransactionsReceiver;
+    private final Map<Account, List<RequestTransaction>> requestTransactionsSender;
+    private final Map<Account, List<RequestTransaction>> requestTransactionsReceiver;
+
+    public RequestTransactionDTO(Map<Account, List<RequestTransaction>> requestTransactionsSender, Map<Account, List<RequestTransaction>> requestTransactionsReceiver) {
+        this.requestTransactionsSender = requestTransactionsSender;
+        this.requestTransactionsReceiver = requestTransactionsReceiver;
+    }
 
     public Map<Account, List<RequestTransaction>> getRequestTransactionsSender() {
         return requestTransactionsSender;
-    }
-
-    public void setRequestTransactionsSender(Map<Account, List<RequestTransaction>> requestTransactionsSender) {
-        this.requestTransactionsSender = requestTransactionsSender;
     }
 
     public Map<Account, List<RequestTransaction>> getRequestTransactionsReceiver() {
         return requestTransactionsReceiver;
     }
 
-    public void setRequestTransactionsReceiver(Map<Account, List<RequestTransaction>> requestTransactionsReceiver) {
-        this.requestTransactionsReceiver = requestTransactionsReceiver;
-    }
+
 }
