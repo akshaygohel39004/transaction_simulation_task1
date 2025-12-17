@@ -6,9 +6,9 @@ import org.example.model.*;
 
 import java.time.LocalDateTime;
 
-public class MakeTransactionThroughUPI implements IMakeTransactions {
+public class TransactionProcessorThroughMobileGateWay implements TransactionProcessor {
 
-    public MakeTransactionThroughUPI() {
+    public TransactionProcessorThroughMobileGateWay() {
 
     }
 
@@ -16,7 +16,7 @@ public class MakeTransactionThroughUPI implements IMakeTransactions {
     private Transaction getTransaction(Account sender,Account receiver,Double Amount){
         Transaction transaction = new Transaction();
         transaction.setTransactionInitiationTime(LocalDateTime.now());
-        transaction.setPaymentService(PaymentService.UPI);
+        transaction.setPaymentService(PaymentService.MobileGateway);
         transaction.setTransactionId(Utility.generateUniqueLongId());
         transaction.setStatus(TransactionStatus.INITIATION);
         transaction.setTransactionType(TransactionType.TRANSFER);
@@ -29,38 +29,38 @@ public class MakeTransactionThroughUPI implements IMakeTransactions {
 
     @Override
     public void SelfTransaction(Account account, Double Amount, boolean isDeposit) {
-        Double updatedAccountBalance,currentAccountBalance;
-        currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
-        Transaction transaction =getTransaction(account,account,Amount);
-        if(isDeposit){
-            transaction.setTransactionType(TransactionType.CREDIT);
-            updatedAccountBalance=currentAccountBalance+Amount;
-            System.out.println("Current Account Balance is "+currentAccountBalance);
-            System.out.println("Updated Account Balance is "+updatedAccountBalance);
-        }
-        else{
-            transaction.setTransactionType(TransactionType.WITHDRAW);
-            try{
-                if(currentAccountBalance<Amount){
+       Double updatedAccountBalance,currentAccountBalance;
+       currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
+       Transaction transaction =getTransaction(account,account,Amount);
+       if(isDeposit){
+           transaction.setTransactionType(TransactionType.CREDIT);
+           updatedAccountBalance=currentAccountBalance+Amount;
+           System.out.println("Current Account Balance is "+currentAccountBalance);
+           System.out.println("Updated Account Balance is "+updatedAccountBalance);
+       }
+       else{
+           transaction.setTransactionType(TransactionType.WITHDRAW);
+           try{
+               if(currentAccountBalance<Amount){
 
-                    throw new Exception("Insufficient Balance");
-                }
-                else{
-                    updatedAccountBalance=currentAccountBalance-Amount;
+                   throw new Exception("Insufficient Balance");
+               }
+               else{
+                   updatedAccountBalance=currentAccountBalance-Amount;
 
-                }
-            }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-                account.addTransaction(transaction);
-                transaction.setStatus(TransactionStatus.FAILED);
+               }
+           }
+           catch (Exception e){
+               System.out.println(e.getMessage());
+               account.addTransaction(transaction);
+               transaction.setStatus(TransactionStatus.FAILED);
 
-                return;
-            }
-        }
-        account.setAccountBalance(updatedAccountBalance);
-        account.addTransaction(transaction);
-        transaction.setStatus(TransactionStatus.COMPLETED);
+               return;
+           }
+       }
+       account.setAccountBalance(updatedAccountBalance);
+       account.addTransaction(transaction);
+       transaction.setStatus(TransactionStatus.COMPLETED);
 
     }
 

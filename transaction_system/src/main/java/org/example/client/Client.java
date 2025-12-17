@@ -3,7 +3,7 @@ package org.example.client;
 import org.example.DTO.AccountViewDTO;
 import org.example.DTO.RequestTransactionDTO;
 import org.example.DTO.TransactionViewDTO;
-import org.example.business.IMakeTransactions;
+import org.example.business.TransactionProcessor;
 import org.example.business.*;
 import org.example.exceptions.ExceptionsCenter;
 import org.example.exceptions.GeneralException;
@@ -55,7 +55,7 @@ public class Client {
 
     }
 
-    public IMakeTransactions paymentServiceType(){
+    public TransactionProcessor paymentServiceType(){
         System.out.println("Select payment service from following options");
         System.out.println("1.CardProcessor");
         System.out.println("2.UPI");
@@ -233,7 +233,7 @@ public class Client {
         System.out.println("Enter Amount");
         Double amount=scanner.nextDouble();
 
-        IMakeTransactions makeTransactions=paymentServiceType();
+        TransactionProcessor makeTransactions=paymentServiceType();
 
         makeTransactions.SelfTransaction(account,amount,isDeposit);
 
@@ -282,7 +282,7 @@ public class Client {
         }
         System.out.println("Enter Amount");
         Double amount=scanner.nextDouble();
-        IMakeTransactions makeTransactions=paymentServiceType();
+        TransactionProcessor makeTransactions=paymentServiceType();
 
         makeTransactions.transferTransaction(myAccount,receiverAccount,amount,false);
     }
@@ -311,7 +311,7 @@ public class Client {
         System.out.println("Enter Amount");
         Double amount=scanner.nextDouble();
 
-        IMakeTransactions makeTransactions=paymentServiceType();
+        TransactionProcessor makeTransactions=paymentServiceType();
 
 
         //gives requestTransaction object
@@ -413,7 +413,8 @@ public class Client {
         Transaction transaction=requestTransaction.getTransaction();
         Account receiver=transaction.getSender(); //here transaction.getSender is request sender so in real transaction it will become receiver of money
         Account sender=transaction.getReceiver(); //here transaction.getReceiver is request receiver so in real transaction he/she will become sender of money
-        Double amount=transaction.getAmount();IMakeTransactions makeTransactions=paymentServiceType();
+        Double amount=transaction.getAmount();
+        TransactionProcessor makeTransactions=paymentServiceType();
 
         makeTransactions.transferTransaction(sender,receiver,amount, choice != 1);
 

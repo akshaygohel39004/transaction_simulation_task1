@@ -39,7 +39,7 @@ public class InMemoryAccountService implements AccountService {
         if(account==null){
              ExceptionsCenter.throwNotFound("Account");
         }
-        return null;
+        return account;
     }
 
 

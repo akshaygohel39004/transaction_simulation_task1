@@ -6,10 +6,10 @@ import org.example.model.*;
 
 import java.time.LocalDateTime;
 
-public class MakeTransactionThroughCardProcessor implements IMakeTransactions {
+public class TransactionProcessorThroughCardProcessor implements TransactionProcessor {
 
 
-    public MakeTransactionThroughCardProcessor() {
+    public TransactionProcessorThroughCardProcessor() {
 
     }
 

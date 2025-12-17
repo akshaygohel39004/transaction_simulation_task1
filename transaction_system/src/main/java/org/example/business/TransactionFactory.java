@@ -3,11 +3,11 @@ package org.example.business;
 import org.example.model.PaymentService;
 
 public class TransactionFactory {
-    public static IMakeTransactions getTransactionPaymentService(PaymentService paymentService){
+    public static TransactionProcessor getTransactionPaymentService(PaymentService paymentService){
         switch (paymentService){
-            case PaymentService.MobileGateway: return new MakeTransactionThroughMobileGateWay();
-            case PaymentService.CardProcessor: return new MakeTransactionThroughCardProcessor();
-            case PaymentService.UPI: return new MakeTransactionThroughUPI();
+            case PaymentService.MobileGateway: return new TransactionProcessorThroughMobileGateWay();
+            case PaymentService.CardProcessor: return new TransactionProcessorThroughCardProcessor();
+            case PaymentService.UPI: return new TransactionProcessorThroughUPI();
         }
         return null;
     }
