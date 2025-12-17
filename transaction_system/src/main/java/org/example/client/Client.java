@@ -22,6 +22,7 @@ public class Client {
     private final Map<Account, List<RequestTransaction>> requestTransactionsSender =new TreeMap<>();
     //stores requestTransaction based on receiver indexing
     private final Map<Account, List<RequestTransaction>> requestTransactionsReceiver =new TreeMap<>();
+    static Scanner  scanner=new Scanner(System.in);
 
 
     //this all are services
@@ -29,7 +30,7 @@ public class Client {
     private final TransactionService transactionService = new InMemoryTransactionService();
     private final RequestTransactionService requestTransactionService = new InMemoryRequestTransactionService();
     private final AccountService accountService=new InMemoryAccountService(userService);
-    static Scanner  scanner=new Scanner(System.in);
+    
     //tracking of authentication
     private User logedinUser;
 
@@ -70,9 +71,10 @@ public class Client {
         };
     }
 
+    
     public void start() {
         while(true){
-            Scanner sc = new Scanner(System.in);
+
             System.out.println("Choose what you want to be do");
             System.out.println("1.Login");
             System.out.println("2.Account List");
@@ -88,7 +90,7 @@ public class Client {
 
             int Choose;
 
-            Choose=sc.nextInt();
+            Choose=scanner.nextInt();
             switch (Choose){
                 case 1:
                     try {
@@ -101,7 +103,7 @@ public class Client {
                     try {
                         listAllUserAccounts();
                     } catch (GeneralException e) {
-                        throw new RuntimeException(e);
+                        System.out.println(e.getMessage());
                     }
                     break;
                 case 3:
@@ -199,7 +201,7 @@ public class Client {
         System.out.println("Your login done");
     }
 
-    private boolean isAuthenticat(){
+    private boolean isAuthenticate(){
         return logedinUser == null;
     }
 
@@ -211,7 +213,7 @@ public class Client {
     }
 
     private void printMyAccountDetails() throws Exception {
-        if(isAuthenticat()){
+        if(isAuthenticate()){
             ExceptionsCenter.throwUnAuthorized();
         }
         List<Account> AccountList=logedinUser.getAccounts();

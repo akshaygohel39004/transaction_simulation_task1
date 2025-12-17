@@ -1,14 +1,11 @@
 package org.example.exceptions;
 
-
 public class ExceptionsCenter {
     public static void throwUnAuthorized() throws Exception {
-
         throw new UnauthorizedException();
     }
 
-    public static Throwable throwNotFound(String subject) throws Exception {
-
+    public static  void throwNotFound(String subject) throws Exception {
         throw new NotFoundException(subject);
     }
 

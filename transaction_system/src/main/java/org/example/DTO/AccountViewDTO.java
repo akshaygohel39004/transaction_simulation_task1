@@ -1,9 +1,11 @@
 package org.example.DTO;
 
 public class AccountViewDTO {
+
     private final String userName;
     private final String accountNumber;
     private final Double balance;
+
     public AccountViewDTO(String userName, String accountNumber, Double balance) {
         this.userName = userName;
         this.accountNumber = accountNumber;
