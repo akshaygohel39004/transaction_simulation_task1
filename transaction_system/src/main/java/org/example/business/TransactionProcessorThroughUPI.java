@@ -2,12 +2,15 @@ package org.example.business;
 
 import org.example.exceptions.ExceptionsCenter;
 import org.example.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.time.LocalDateTime;
 
 public class TransactionProcessorThroughUPI implements TransactionProcessor {
 
+    Logger logger = LoggerFactory.getLogger(TransactionProcessorThroughUPI.class);
     public TransactionProcessorThroughUPI() {
 
     }
@@ -18,7 +21,9 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
         transaction.setTransactionInitiationTime(LocalDateTime.now());
         transaction.setPaymentService(PaymentService.UPI);
         transaction.setTransactionId(Utility.generateUniqueLongId());
-        transaction.setStatus(TransactionStatus.INITIATION);
+
+
+
         transaction.setTransactionType(TransactionType.TRANSFER);
         transaction.setStatus(TransactionStatus.PENDING);
         transaction.setSender(sender);
@@ -35,8 +40,8 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
         if(TransactionType.CREDIT.equals(transactionType)){
             transaction.setTransactionType(TransactionType.CREDIT);
             updatedAccountBalance=currentAccountBalance+Amount;
-            System.out.println("Current Account Balance is "+currentAccountBalance);
-            System.out.println("Updated Account Balance is "+updatedAccountBalance);
+            logger.info("Current Account Balance is "+currentAccountBalance);
+            logger.info("Updated Account Balance: "+updatedAccountBalance);
         }
         else{
             transaction.setTransactionType(TransactionType.WITHDRAW);
