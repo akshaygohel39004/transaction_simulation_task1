@@ -113,14 +113,14 @@ public class Client {
                     break;
                 case 4:
                     try {
-                        selfTransaction(true);
+                        selfTransaction(TransactionType.CREDIT);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                     break;
                 case 5:
                     try {
-                        selfTransaction(false);
+                        selfTransaction(TransactionType.WITHDRAW);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -210,7 +210,7 @@ public class Client {
         }
     }
 
-    private void selfTransaction(boolean isDeposit) throws Exception {
+    private void selfTransaction(TransactionType transactionType) throws Exception {
         Scanner scanner=new Scanner(System.in);
         printMyAccountDetails();
         System.out.println("Enter Account Number");
@@ -221,7 +221,7 @@ public class Client {
             ExceptionsCenter.throwNotFound("Account");
         }
         //if user wants to withdraw(not deposit) then it should be logged in and Account should be belonged to his/her account
-        if(!isDeposit){
+            if(transactionType==TransactionType.WITHDRAW){
             if(isAuthenticat()){
                 ExceptionsCenter.throwUnAuthorized();
             }
@@ -235,7 +235,7 @@ public class Client {
 
         TransactionProcessor makeTransactions=paymentServiceType();
 
-        makeTransactions.SelfTransaction(account,amount,isDeposit);
+        makeTransactions.SelfTransaction(account,amount,transactionType);
 
     }
 
@@ -284,7 +284,7 @@ public class Client {
         Double amount=scanner.nextDouble();
         TransactionProcessor makeTransactions=paymentServiceType();
 
-        makeTransactions.transferTransaction(myAccount,receiverAccount,amount,false);
+        makeTransactions.transferTransaction(myAccount,receiverAccount,amount,TransactionStatus.PENDING);
     }
 
     private void requestTransaction() throws Exception {
@@ -416,7 +416,12 @@ public class Client {
         Double amount=transaction.getAmount();
         TransactionProcessor makeTransactions=paymentServiceType();
 
-        makeTransactions.transferTransaction(sender,receiver,amount, choice != 1);
+        if(choice==1){
+            makeTransactions.transferTransaction(sender,receiver,amount, TransactionStatus.PENDING);
+        }
+        else{
+            makeTransactions.transferTransaction(sender,receiver,amount, TransactionStatus.FAILED);
+        }
 
 
     }

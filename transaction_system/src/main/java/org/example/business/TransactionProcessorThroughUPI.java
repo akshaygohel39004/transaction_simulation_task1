@@ -28,11 +28,11 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
     }
 
     @Override
-    public void SelfTransaction(Account account, Double Amount, boolean isDeposit) {
+    public void SelfTransaction(Account account, Double Amount, TransactionType transactionType) {
         Double updatedAccountBalance,currentAccountBalance;
         currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
         Transaction transaction =getTransaction(account,account,Amount);
-        if(isDeposit){
+        if(TransactionType.CREDIT.equals(transactionType)){
             transaction.setTransactionType(TransactionType.CREDIT);
             updatedAccountBalance=currentAccountBalance+Amount;
             System.out.println("Current Account Balance is "+currentAccountBalance);
@@ -43,7 +43,7 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
             try{
                 if(currentAccountBalance<Amount){
 
-                    throw new Exception("Insufficient Balance");
+                    ExceptionsCenter.insufficientBalance();
                 }
                 else{
                     updatedAccountBalance=currentAccountBalance-Amount;
@@ -65,7 +65,7 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
     }
 
     @Override
-    public void transferTransaction(Account sender, Account receiver, Double Amount,boolean willCancel)  {
+    public void transferTransaction(Account sender, Account receiver, Double Amount,TransactionStatus transactionStatus)  {
 
         Transaction transaction=getTransaction(sender,receiver,Amount);
         //* critical section starts here
@@ -74,12 +74,12 @@ public class TransactionProcessorThroughUPI implements TransactionProcessor {
         Double currentAccountBalanceSender=sender.getAccountBalance();
         Double currentAccountBalanceReceiver=receiver.getAccountBalance();
         try{
-            if(willCancel){
+            if(TransactionStatus.FAILED.equals(transactionStatus)){
                 ExceptionsCenter.general("Request has to cancel, failed transactio");
             }
             if(currentAccountBalanceSender<Amount){
 
-                throw new Exception("Insufficient Balance");
+                ExceptionsCenter.insufficientBalance();
             }
             else{
 

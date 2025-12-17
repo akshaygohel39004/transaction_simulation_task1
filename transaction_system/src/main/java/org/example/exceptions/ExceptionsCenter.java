@@ -16,4 +16,8 @@ public class ExceptionsCenter {
 
         throw new GeneralException(message);
     }
+
+    public static void insufficientBalance() throws Exception {
+        throw new InsufficientBalanceException();
+    }
 }
