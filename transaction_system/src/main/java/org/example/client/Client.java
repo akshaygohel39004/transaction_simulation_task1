@@ -5,7 +5,8 @@ import org.example.DTO.RequestTransactionDTO;
 import org.example.DTO.TransactionViewDTO;
 import org.example.business.IMakeTransactions;
 import org.example.business.*;
-import org.example.exceptions.ThrowExcpetions;
+import org.example.exceptions.ExceptionsCenter;
+import org.example.exceptions.GeneralException;
 import org.example.model.*;
 import org.example.service.*;
 
@@ -15,6 +16,8 @@ import java.util.*;
 public class Client {
     //stores user indexing on id
     private static final Map<Long,User> users = new HashMap<>();
+    //store  accountNumber as index
+    private static final Map<String,Account> accounts = new HashMap<>();
     //stores requestTransaction based on sender indexing
     private final Map<Account, List<RequestTransaction>> requestTransactionsSender =new TreeMap<>();
     //stores requestTransaction based on receiver indexing
@@ -26,7 +29,7 @@ public class Client {
     private final TransactionService transactionService = new InMemoryTransactionService();
     private final RequestTransactionService requestTransactionService = new InMemoryRequestTransactionService();
     private final AccountService accountService=new InMemoryAccountService(userService);
-
+    static Scanner  scanner=new Scanner(System.in);
     //tracking of authentication
     private User logedinUser;
 
@@ -42,12 +45,16 @@ public class Client {
 
         u1.addAccount(new Account(100L, "1",5000D, AccountType.SAVING));
         u1.addAccount(new Account(101L, "2", 20000D,AccountType.CHECKING));
+        accounts.put(u1.getAccounts().get(0).getAccountNumber(),u1.getAccounts().get(0));
+        accounts.put(u1.getAccounts().get(1).getAccountNumber(),u1.getAccounts().get(1));
         addUser(u1);
 
         u2.addAccount(new Account(102L, "3", 40005D,AccountType.SAVING));
         addUser(u2);
+        accounts.put(u2.getAccounts().get(0).getAccountNumber(),u2.getAccounts().get(0));
 
     }
+
     public IMakeTransactions paymentServiceType(){
         System.out.println("Select payment service from following options");
         System.out.println("1.CardProcessor");
@@ -91,7 +98,11 @@ public class Client {
                     }
                     break;
                 case 2:
-                    listAllAccount();
+                    try {
+                        listAllUserAccounts();
+                    } catch (GeneralException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 case 3:
                     try {
@@ -167,21 +178,22 @@ public class Client {
         users.put(user.getUserId(), user);
     }
     private void login() throws Exception {
-        Scanner scanner=new Scanner(System.in);
+
         System.out.println("Enter Username");
-        String username = scanner.next();
+
+        String username = scanner.nextLine();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
-            ThrowExcpetions.throwNotFound("User");
+            ExceptionsCenter.throwNotFound("User");
         }
         System.out.println("Your login done");
     }
 
-    private boolean authenticate(){
+    private boolean isAuthenticat(){
         return logedinUser == null;
     }
 
-    private void listAllAccount(){
+    private void listAllUserAccounts() throws GeneralException {
         List<AccountViewDTO> accountViewDTOList=accountService.readAllAccounts(users);
         for(AccountViewDTO accountViewDTO : accountViewDTOList){
             System.out.println(accountViewDTO);
@@ -189,8 +201,8 @@ public class Client {
     }
 
     private void printMyAccountDetails() throws Exception {
-        if(authenticate()){
-            ThrowExcpetions.throwUnAuthorized();
+        if(isAuthenticat()){
+            ExceptionsCenter.throwUnAuthorized();
         }
         List<Account> AccountList=logedinUser.getAccounts();
         for(Account account:AccountList){
@@ -204,17 +216,17 @@ public class Client {
         System.out.println("Enter Account Number");
         String accountNumber=scanner.next();
 
-        Account account= accountService.readAccountByAccountNumber(users,accountNumber);
+        Account account= accountService.readAccountByAccountNumber(accounts,accountNumber);
         if(account==null){
-            ThrowExcpetions.throwNotFound("Account");
+            ExceptionsCenter.throwNotFound("Account");
         }
         //if user wants to withdraw(not deposit) then it should be logged in and Account should be belonged to his/her account
         if(!isDeposit){
-            if(authenticate()){
-                ThrowExcpetions.throwUnAuthorized();
+            if(isAuthenticat()){
+                ExceptionsCenter.throwUnAuthorized();
             }
             if(!logedinUser.getAccounts().contains(account)){
-                ThrowExcpetions.throwNotFound("Account");
+                ExceptionsCenter.throwNotFound("Account");
             }
         }
 
@@ -228,17 +240,17 @@ public class Client {
     }
 
     private void myAllTransactions() throws Exception {
-        if(authenticate()){
-            ThrowExcpetions.throwUnAuthorized();
+        if(isAuthenticat()){
+            ExceptionsCenter.throwUnAuthorized();
         }
         Scanner scanner=new Scanner(System.in);
         printMyAccountDetails();
         System.out.println("Enter Account Number");
         String accountNumber=scanner.next();
 
-        Account account= accountService.readAccountByAccountNumber(users,accountNumber);
+        Account account= accountService.readAccountByAccountNumber(accounts,accountNumber);
         if(account==null){
-            ThrowExcpetions.throwNotFound("Account");
+            ExceptionsCenter.throwNotFound("Account");
         }
 
         List<TransactionViewDTO> transactionViewDTOList= transactionService.readAllTransactionsFromAccount(account);
@@ -254,19 +266,19 @@ public class Client {
         System.out.println("Enter your Account Number");
         String myAccountNumber=scanner.next();
 
-        Account myAccount= accountService.readAccountByAccountNumber(users,myAccountNumber);
+        Account myAccount= accountService.readAccountByAccountNumber(accounts,myAccountNumber);
         if(myAccount==null){
-            ThrowExcpetions.throwNotFound("sender's account");
+            ExceptionsCenter.throwNotFound("sender's account");
         }
-        listAllAccount();
+        listAllUserAccounts();
         System.out.println("Enter receiver's account number");
         String receiverAccountNumber=scanner.next();
-        Account receiverAccount= accountService.readAccountByAccountNumber(users,receiverAccountNumber);
+        Account receiverAccount= accountService.readAccountByAccountNumber(accounts,receiverAccountNumber);
         if(receiverAccount==null){
-            ThrowExcpetions.throwNotFound("receiver's account");
+            ExceptionsCenter.throwNotFound("receiver's account");
         }
         if(receiverAccount.equals(myAccount)){
-            ThrowExcpetions.general("You can't transfer money in same account");
+            ExceptionsCenter.general("You can't transfer money in same account");
         }
         System.out.println("Enter Amount");
         Double amount=scanner.nextDouble();
@@ -282,19 +294,19 @@ public class Client {
         System.out.println("Enter your Account Number");
         String myAccountNumber=scanner.next();
 
-        Account myAccount= accountService.readAccountByAccountNumber(users,myAccountNumber);
+        Account myAccount= accountService.readAccountByAccountNumber(accounts,myAccountNumber);
         if(myAccount==null){
-            ThrowExcpetions.throwNotFound("sender's account");
+            ExceptionsCenter.throwNotFound("sender's account");
         }
-        listAllAccount();
+        listAllUserAccounts();
         System.out.println("Enter request receiver's account number");
         String receiverAccountNumber=scanner.next();
-        Account receiverAccount= accountService.readAccountByAccountNumber(users,receiverAccountNumber);
+        Account receiverAccount= accountService.readAccountByAccountNumber(accounts,receiverAccountNumber);
         if(receiverAccount==null){
-            ThrowExcpetions.throwNotFound("request receiver's account");
+            ExceptionsCenter.throwNotFound("request receiver's account");
         }
         if(receiverAccount.equals(myAccount)){
-            ThrowExcpetions.general("You can't request money in same account");
+            ExceptionsCenter.general("You can't request money in same account");
         }
         System.out.println("Enter Amount");
         Double amount=scanner.nextDouble();
@@ -318,8 +330,8 @@ public class Client {
     //this function is use for handleTransaction
     //we need to maintain loged in Account in caller function so we return it here
     private Account  printTransactionRequest() throws Exception {
-        if(authenticate()){
-            ThrowExcpetions.throwUnAuthorized();
+        if(isAuthenticat()){
+            ExceptionsCenter.throwUnAuthorized();
         }
         //ask about which account you want to use
         Scanner scanner=new Scanner(System.in);
@@ -328,9 +340,9 @@ public class Client {
         System.out.println("Enter your Account Number");
         String myAccountNumber=scanner.next();
 
-        Account myAccount= accountService.readAccountByAccountNumber(users,myAccountNumber);
+        Account myAccount= accountService.readAccountByAccountNumber(accounts,myAccountNumber);
         if(myAccount==null){
-            ThrowExcpetions.throwNotFound("sender's account");
+            ExceptionsCenter.throwNotFound("sender's account");
         }
 
 
@@ -386,7 +398,7 @@ public class Client {
 
 
         if(requestTransaction==null){
-            ThrowExcpetions.throwNotFound("request not found");
+            ExceptionsCenter.throwNotFound("request not found");
         }
 
         System.out.println("Enter 1 to Accpet.\nEnter else to Reject");

@@ -1,6 +1,6 @@
 package org.example.business;
 
-import org.example.exceptions.ThrowExcpetions;
+import org.example.exceptions.ExceptionsCenter;
 import org.example.model.*;
 
 
@@ -76,11 +76,11 @@ public class MakeTransactionThroughCardProcessor implements IMakeTransactions {
         Double currentAccountBalanceReceiver=receiver.getAccountBalance();
         try{
             if(willCancel){
-                ThrowExcpetions.general("Request has to cancel, failed transactio");
+                ExceptionsCenter.general("Request has to cancel, failed transactio");
             }
             if(currentAccountBalanceSender<Amount){
 
-                ThrowExcpetions.general("Insufficient Balance");
+                ExceptionsCenter.general("Insufficient Balance");
             }
             else{
 
