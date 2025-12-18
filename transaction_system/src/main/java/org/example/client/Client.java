@@ -3,13 +3,12 @@ package org.example.client;
 import org.example.DTO.AccountViewDTO;
 import org.example.DTO.RequestTransactionDTO;
 import org.example.DTO.TransactionViewDTO;
-import org.example.business.TransactionProcessor;
+import org.example.business.IMakeTransactions;
 import org.example.business.*;
-import org.example.exceptions.ExceptionsCenter;
-import org.example.exceptions.GeneralException;
+import org.example.exceptions.ThrowExcpetions;
 import org.example.model.*;
 import org.example.service.*;
-
+import org.example.stats.PaymentStatsRouter;
 
 import java.util.*;
 
@@ -30,12 +29,12 @@ public class Client {
     private final TransactionService transactionService = new InMemoryTransactionService();
     private final RequestTransactionService requestTransactionService = new InMemoryRequestTransactionService();
     private final AccountService accountService=new InMemoryAccountService(userService);
-    
+
     //tracking of authentication
     private User logedinUser;
 
-    public Client(){
-
+    public Client(PaymentStatsRouter statsRouter){
+        this.statsRouter = statsRouter;
         seedSampleData();
     }
     private void seedSampleData() {
@@ -71,7 +70,6 @@ public class Client {
         };
     }
 
-    
     public void start() {
         while(true){
 
@@ -192,8 +190,7 @@ public class Client {
     private void login() throws Exception {
 
         System.out.println("Enter Username");
-
-        String username = scanner.nextLine();
+        String username = scanner.next();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
             ExceptionsCenter.throwNotFound("User");
