@@ -23,9 +23,11 @@ public class AccountViewDTO {
     }
 
 
+
     public Double getBalance() {
         return balance;
     }
+
 
 
     @Override
