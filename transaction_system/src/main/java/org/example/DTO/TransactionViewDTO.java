@@ -1,9 +1,6 @@
 package org.example.DTO;
 
-import org.example.model.Account;
-import org.example.model.PaymentService;
-import org.example.model.TransactionStatus;
-import org.example.model.TransactionType;
+import org.example.model.*;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +22,10 @@ public class TransactionViewDTO {
         this.status = status;
         this.paymentService = paymentService;
         this.amount = amount;
+    }
+
+    public static TransactionViewDTO mapper(Transaction transaction) {
+        return new TransactionViewDTO(transaction.getReceiver(), transaction.getTransactionId(),transaction.getSender(),transaction.getTransactionType(),transaction.getTransactionInitiationTime(),transaction.getStatus(),transaction.getPaymentService(),transaction.getAmount());
     }
 
     public Long getTransactionId() {

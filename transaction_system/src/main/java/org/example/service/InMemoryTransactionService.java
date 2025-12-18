@@ -19,16 +19,7 @@ public class InMemoryTransactionService implements TransactionService {
 
         List<TransactionViewDTO> transactionViewDTO=new LinkedList<TransactionViewDTO>();
         for(Transaction t:transaction){
-            transactionViewDTO.add(new TransactionViewDTO(
-                    t.getReceiver(),
-                    t.getTransactionId(),
-                    t.getSender(),
-                    t.getTransactionType(),
-                    t.getTransactionInitiationTime(),
-                    t.getStatus(),
-                    t.getPaymentService(),
-                    t.getAmount()
-            ));
+            transactionViewDTO.add(TransactionViewDTO.mapper(t));
         }
 
         return transactionViewDTO;
