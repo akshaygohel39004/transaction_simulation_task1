@@ -10,6 +10,11 @@ public class ExceptionsCenter {
     }
 
     public static void general(String message) throws Exception {
+
         throw new GeneralException(message);
+    }
+
+    public static void insufficientBalance() throws Exception {
+        throw new InsufficientBalanceException();
     }
 }

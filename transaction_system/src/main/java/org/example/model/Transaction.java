@@ -14,6 +14,17 @@ public class Transaction {
     private Double amount;
     public Transaction() {}
 
+    private Transaction(Builder builder) {
+        this.transactionId = builder.transactionId;
+        this.transactionType = builder.transactionType;
+        this.transactionInitiationTime = builder.transactionInitiationTime;
+        this.status = builder.status;
+        this.paymentService = builder.paymentService;
+        this.sender = builder.sender;
+        this.receiver = builder.receiver;
+        this.amount = builder.amount;
+
+    }
     public Transaction(Long transactionId,
                        TransactionType transactionType,
                        LocalDateTime transactionInitiationTime,
@@ -92,5 +103,64 @@ public class Transaction {
                 ", receiver=" + receiver +
                 ", amount=" + amount +
                 '}';
+    }
+
+    public static class Builder{
+        private Long transactionId;
+        private TransactionType transactionType;         // DEBITE / CREDIT
+        private LocalDateTime transactionInitiationTime=LocalDateTime.now();
+        private TransactionStatus status;
+        private PaymentService paymentService;            // MobileGateway, CardProcessor, UPI
+        private Account sender;
+        private Account receiver;
+        private Double amount=0D;
+
+        public Builder(){
+
+        }
+
+        public Builder setTransactionId(Long transactionId) {
+            this.transactionId = transactionId;
+            return this;
+        }
+
+        public Builder setTransactionType(TransactionType transactionType) {
+            this.transactionType = transactionType;
+            return this;
+        }
+
+        public Builder setTransactionInitiationTime(LocalDateTime transactionInitiationTime) {
+            this.transactionInitiationTime = transactionInitiationTime;
+            return this;
+        }
+
+        public Builder setStatus(TransactionStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder setPaymentService(PaymentService paymentService) {
+            this.paymentService = paymentService;
+            return this;
+        }
+
+        public Builder setSender(Account sender) {
+            this.sender = sender;
+            return this;
+        }
+
+        public Builder setAmount(Double amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public Builder setReceiver(Account receiver) {
+            this.receiver = receiver;
+            return this;
+        }
+
+        public Transaction Build(){
+            return new Transaction(this);
+        }
     }
 }

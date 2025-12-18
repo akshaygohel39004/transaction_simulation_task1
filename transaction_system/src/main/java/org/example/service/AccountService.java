@@ -14,5 +14,5 @@ public interface AccountService {
 
     List<AccountViewDTO> readAllAccounts(Map<Long, User> users) throws GeneralException;
 
-    Account readAccountByAccountNumber(Map<String, Account> accountMap, String accountNumber) throws NotFoundException;
+    Account readAccountByAccountNumber(Map<String, Account> accountMap, String accountNumber) throws Exception;
 }

@@ -1,9 +1,11 @@
 package org.example.DTO;
 
 public class AccountViewDTO {
-    private String userName;
-    private String accountNumber;
-    private Double balance;
+
+    private final String userName;
+    private final String accountNumber;
+    private final Double balance;
+
     public AccountViewDTO(String userName, String accountNumber, Double balance) {
         this.userName = userName;
         this.accountNumber = accountNumber;
@@ -14,25 +16,19 @@ public class AccountViewDTO {
         return accountNumber;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
+
 
     public String getUserName() {
         return userName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+
 
     public Double getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
-        this.balance = balance;
-    }
+
 
     @Override
     public String toString() {
