@@ -11,9 +11,9 @@
 package org.example.test;
 import org.example.DTO.AccountViewDTO;
 
-import org.example.business.IMakeTransactions;
-import org.example.business.*;
-import org.example.exceptions.ThrowExcpetions;
+import org.example.business.TransactionProcessor;
+import org.example.business.TransactionProcessorThroughUPI;
+import org.example.exceptions.*;
 import org.example.model.*;
 import org.example.service.*;
 import org.example.stats.PaymentStatsRouter;
@@ -33,15 +33,12 @@ public class DemoClient {
 
     private final PaymentStatsRouter statsRouter;
 
-
     //this all are services
     private final UserService userService = new InMemoryUserService();
     private final AccountService accountService=new InMemoryAccountService(userService);
 
     //tracking of authentication
     private User logedinUser;
-
-
 
     public DemoClient(PaymentStatsRouter statsRouter) {
         this.statsRouter = statsRouter;
@@ -83,7 +80,7 @@ public class DemoClient {
         String username = scanner.next();
         userService.readAllUsers(users).stream().filter(u -> u.getUserName().equals(username)).findFirst().ifPresent(u -> logedinUser=u);
         if(logedinUser==null){
-            ThrowExcpetions.throwNotFound("User");
+            ExceptionsCenter.throwNotFound("User");
         }
         System.out.println("Your login done");
     }
@@ -92,7 +89,7 @@ public class DemoClient {
         return logedinUser == null;
     }
 
-    private void listAllAccount(){
+    private void listAllAccount() throws GeneralException {
         List<AccountViewDTO> accountViewDTOList=accountService.readAllAccounts(users);
         for(AccountViewDTO accountViewDTO : accountViewDTOList){
             System.out.println(accountViewDTO);
@@ -101,7 +98,7 @@ public class DemoClient {
 
     private void printMyAccountDetails() throws Exception {
         if(authenticate()){
-            ThrowExcpetions.throwUnAuthorized();
+            ExceptionsCenter.throwUnAuthorized();
         }
         List<Account> AccountList=logedinUser.getAccounts();
         for(Account account:AccountList){
@@ -111,20 +108,28 @@ public class DemoClient {
 
     private void transferTransaction() throws Exception {
 
-        ExecutorService executorService= Executors.newFixedThreadPool(2);
-        IMakeTransactions makeTransactions=new MakeTransactionThroughMobileGateWay(statsRouter);
+        ExecutorService executorService= Executors.newFixedThreadPool(4);
+        TransactionProcessor transactionProcessor=new TransactionProcessorThroughUPI(statsRouter);
 
         Account senderC1= new ArrayList<>(users.values()).get(0).getAccounts().get(0);
         Account senderC2=new ArrayList<>(users.values()).get(0).getAccounts().get(1);
         Account receiverC2=new ArrayList<>(users.values()).get(1).getAccounts().get(0);
         System.out.println(receiverC2.getAccountBalance());
-        executorService.submit(()->{
-            makeTransactions.transferTransaction(senderC1,receiverC2,500D,false);
-        });
+        Random rnd=new Random();
+        for(int i=0;i<2000;i++){
+            boolean trans=rnd.nextInt(500)%2==1;
+            if(trans){
+                executorService.submit(()->{
+                    transactionProcessor.transferTransaction(senderC1,receiverC2,1D,TransactionStatus.PENDING);
+                });
+            }
+            else{
+                executorService.submit(()->{
+                    transactionProcessor.transferTransaction(senderC1,receiverC2,1D,TransactionStatus.FAILED);
+                });
+            }
+        }
 
-        executorService.submit(()->{
-            makeTransactions.transferTransaction(senderC2,receiverC2,500D,false);
-        });
 
         executorService.awaitTermination(2, TimeUnit.SECONDS);
         executorService.shutdown();

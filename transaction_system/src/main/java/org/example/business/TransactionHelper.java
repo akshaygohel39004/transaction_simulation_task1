@@ -1,14 +1,18 @@
 package org.example.business;
 
-import org.example.exceptions.ThrowExcpetions;
+import org.example.exceptions.*;
 import org.example.model.*;
 import org.example.stats.PaymentStatsRouter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 
 public class TransactionHelper {
     private final PaymentStatsRouter statsRouter;
     private final PaymentService paymentService;
+    Logger logger = LoggerFactory.getLogger(TransactionHelper.class);
+
     public TransactionHelper(PaymentStatsRouter statsRouter,PaymentService paymentService) {
         this.statsRouter = statsRouter;
         this.paymentService = paymentService;
@@ -28,15 +32,15 @@ public class TransactionHelper {
         return transaction;
     }
 
-    public  void doSelfTransaction(Account account, Double Amount, boolean isDeposit) {
+    public  void doSelfTransaction(Account account, Double Amount,TransactionType transactionType) {
         Double updatedAccountBalance,currentAccountBalance;
         currentAccountBalance=updatedAccountBalance=account.getAccountBalance();
         Transaction transaction =getTransaction(account,account,Amount);
-        if(isDeposit){
+        if(transactionType.equals(TransactionType.CREDIT)){
             transaction.setTransactionType(TransactionType.CREDIT);
             updatedAccountBalance=currentAccountBalance+Amount;
-            System.out.println("Current Account Balance is "+currentAccountBalance);
-            System.out.println("Updated Account Balance is "+updatedAccountBalance);
+            logger.info("Current Account Balance is "+currentAccountBalance);
+            logger.info("Updated Account Balance: "+updatedAccountBalance);
         }
         else{
             transaction.setTransactionType(TransactionType.WITHDRAW);
@@ -51,6 +55,7 @@ public class TransactionHelper {
                 }
             }
             catch (Exception e){
+                logger.error(e.getMessage());
                 System.out.println(e.getMessage());
                 account.addTransaction(transaction);
                 transaction.setStatus(TransactionStatus.FAILED);
@@ -64,7 +69,7 @@ public class TransactionHelper {
         statsRouter.submit(transaction);
     }
 
-    public  void doTransferTransaction(Account sender, Account receiver, Double Amount, boolean willCancel){
+    public  void doTransferTransaction(Account sender, Account receiver, Double Amount, TransactionStatus transactionStatus){
         Transaction transaction=getTransaction(sender,receiver,Amount);
         //* critical section starts here
         transaction.setTransactionType(TransactionType.TRANSFER);
@@ -74,8 +79,8 @@ public class TransactionHelper {
                 synchronized (receiver){
                     Double currentAccountBalanceSender=sender.getAccountBalance();
                     Double currentAccountBalanceReceiver=receiver.getAccountBalance();
-                    if(willCancel){
-                        ThrowExcpetions.general("Request has to cancel, failed transactio");
+                    if(transactionStatus.equals(TransactionStatus.FAILED)){
+                        ExceptionsCenter.general("Request has to cancel, failed transactio");
                     }
                     if(currentAccountBalanceSender<Amount){
 

@@ -3,9 +3,8 @@ package org.example.client;
 import org.example.DTO.AccountViewDTO;
 import org.example.DTO.RequestTransactionDTO;
 import org.example.DTO.TransactionViewDTO;
-import org.example.business.IMakeTransactions;
 import org.example.business.*;
-import org.example.exceptions.ThrowExcpetions;
+import org.example.exceptions.*;
 import org.example.model.*;
 import org.example.service.*;
 import org.example.stats.PaymentStatsRouter;
@@ -24,12 +23,13 @@ public class Client {
     static Scanner  scanner=new Scanner(System.in);
 
 
+
     //this all are services
     private final UserService userService = new InMemoryUserService();
     private final TransactionService transactionService = new InMemoryTransactionService();
     private final RequestTransactionService requestTransactionService = new InMemoryRequestTransactionService();
     private final AccountService accountService=new InMemoryAccountService(userService);
-
+    private PaymentStatsRouter statsRouter;
     //tracking of authentication
     private User logedinUser;
 
@@ -64,9 +64,9 @@ public class Client {
         int choice=sc.nextInt();
 
         return switch (choice) {
-            case 1 -> TransactionFactory.getTransactionPaymentService(PaymentService.CardProcessor);
-            case 2 -> TransactionFactory.getTransactionPaymentService(PaymentService.UPI);
-            default -> TransactionFactory.getTransactionPaymentService(PaymentService.MobileGateway);
+            case 1 -> TransactionFactory.getTransactionPaymentService(PaymentService.CardProcessor,statsRouter);
+            case 2 -> TransactionFactory.getTransactionPaymentService(PaymentService.UPI,statsRouter);
+            default -> TransactionFactory.getTransactionPaymentService(PaymentService.MobileGateway,statsRouter);
         };
     }
 
