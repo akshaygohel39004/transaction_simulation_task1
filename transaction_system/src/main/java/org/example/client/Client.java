@@ -234,7 +234,7 @@ public class Client {
         }
         //if user wants to withdraw(not deposit) then it should be logged in and Account should be belonged to his/her account
             if(transactionType==TransactionType.WITHDRAW){
-            if(isAuthenticat()){
+            if(isAuthenticate()){
                 ExceptionsCenter.throwUnAuthorized();
             }
             if(!logedinUser.getAccounts().contains(account)){
@@ -252,7 +252,7 @@ public class Client {
     }
 
     private void myAllTransactions() throws Exception {
-        if(isAuthenticat()){
+        if(isAuthenticate()){
             ExceptionsCenter.throwUnAuthorized();
         }
         Scanner scanner=new Scanner(System.in);
@@ -340,7 +340,7 @@ public class Client {
     //this function is use for handleTransaction
     //we need to maintain loged in Account in caller function so we return it here
     private Account  printTransactionRequest() throws Exception {
-        if(isAuthenticat()){
+        if(isAuthenticate()){
             ExceptionsCenter.throwUnAuthorized();
         }
 

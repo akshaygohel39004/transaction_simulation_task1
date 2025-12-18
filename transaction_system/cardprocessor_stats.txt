@@ -1,0 +1,3 @@
+TxId: 338280954142803216 | Sender: 1 | Receiver: 2 | Amount: 500.0 | Status: COMPLETED
+Time: 2025-12-18T10:49:48.749317SUMMARY is Total: 1 Success: 1 Failed: 0
+
