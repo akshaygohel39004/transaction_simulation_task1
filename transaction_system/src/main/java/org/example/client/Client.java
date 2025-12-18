@@ -309,9 +309,7 @@ public class Client {
         RequestTransaction requestTransaction=makeTransactions.RequestTransaction(myAccount,receiverAccount,amount);
 
         //creating request transaction DTO
-        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO();
-        requestTransactionDTO.setRequestTransactionsReceiver(requestTransactionsReceiver);
-        requestTransactionDTO.setRequestTransactionsSender(requestTransactionsSender);
+        RequestTransactionDTO requestTransactionDTO=new RequestTransactionDTO().mapper(requestTransactionsSender,requestTransactionsReceiver);
 
         //added requestTransaction into list maintaining inside client itself
         requestTransactionService.CreateRequestTransaction(requestTransactionDTO,requestTransaction);

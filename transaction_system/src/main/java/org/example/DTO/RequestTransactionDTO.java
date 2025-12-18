@@ -15,6 +15,13 @@ public class RequestTransactionDTO {
         return requestTransactionsSender;
     }
 
+    public RequestTransactionDTO mapper(Map<Account, List<RequestTransaction>> requestTransactionsSender, Map<Account, List<RequestTransaction>> requestTransactionsReceiver) {
+        this.requestTransactionsSender = requestTransactionsSender;
+        this.requestTransactionsReceiver = requestTransactionsReceiver;
+        return this;
+    }
+
+
     public void setRequestTransactionsSender(Map<Account, List<RequestTransaction>> requestTransactionsSender) {
         this.requestTransactionsSender = requestTransactionsSender;
     }
